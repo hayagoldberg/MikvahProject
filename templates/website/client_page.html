@@ -1,0 +1,34 @@
+{% extends 'base_layout.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="red_back">
+        <h1> this is a page for you </h1>
+    </div>
+
+            <a href="{% url 'website:my_appointments' %}"> My appointments</a>
+
+    <h1>All Mikvahs</h1>
+
+    <div class="three_in_a_line_container">
+    {% for mikvah in mikvahs %}
+        <div class="three_in_a_line_element">
+            <h2>{{ mikvah.name }}</h2>
+            <p>Address: {{ mikvah.address_nb }}</p>
+            <p>City: {{ mikvah.address_city }}</p>
+            <p>State: {{ mikvah.address_state }}</p>
+            <p>Country: {{ mikvah.address_country }}</p>
+            <p>Phone: {{ mikvah.phone_nb1 }}</p>
+            <h3> Opening time: </h3>
+                    {% for mikvah_calendar in mikvah.mikvahcalendar_set.all %}
+                            <p>{{mikvah_calendar.day}}:
+                            from {{ mikvah_calendar.opening_time }} to {{ mikvah_calendar.closing_time }}</p>
+                    {% endfor %}            <br>
+            <a href="{% url 'website:new_appointment' mikvah_id=mikvah.mikvah_id %}" class="btn"> Make an appointment</a>
+
+            <!-- Add any other properties here -->
+        </div>
+    {% endfor %}
+    </div>
+
+{% endblock %}

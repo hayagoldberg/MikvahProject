@@ -1,0 +1,21 @@
+{% extends 'base_layout.html' %}
+{% block content %}
+
+    <h1> this is a page for professionals</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="my-mikvah">See your mikvah</button>
+        <button type="submit" name="add-mikvah">Add a mikvah</button>
+    </form>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li>{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+
+{% endblock %}

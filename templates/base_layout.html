@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>base layout</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+     <header>
+     <h1> <a href="{% url 'website:index' %}"> <img src="{% static 'what-is-a-home-page.jpg' %}"></a></h1>
+        <h1> welcome to our website </h1>
+
+         {% if user.is_authenticated %}
+             <p> Logged in as {{ user }}</p>
+             <form class="Logout-link" action="{% url 'accounts:logout' %}" method="post">
+                 {% csrf_token %}
+                 <button type="submit">Logout</button>
+             </form>
+         {% else %}
+             <form class="Login-link" action="{% url 'accounts:login' %}" method="post">
+                 {% csrf_token %}
+                 <button type="submit">Login</button>
+             </form>
+             <br>
+             <form class="Signup-link" action="{% url 'accounts:signup' %}" method="post">
+                 {% csrf_token %}
+                 <button type="submit">Signup</button>
+             </form>
+         {% endif %}
+    </header>
+     <div class="wrapper">
+    {% block content %}
+    {% endblock %}
+    </div>
+</body>
+</html>

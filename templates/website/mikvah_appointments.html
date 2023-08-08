@@ -1,0 +1,34 @@
+{% extends 'base_layout.html' %}
+{% load static %}
+{% block content %}
+
+        <h1> mikvah appointments </h1>
+
+    <div class="three_in_a_line_container">
+    {% for appointment in appointments %}
+                {% if appointment.canceled is False %}
+        <div class="three_in_a_line_element">
+            <h2>{{appointment.mikvah_id.name}}</h2>
+            <p>Date: {{ appointment.date }}</p>
+            <p>Start: {{ appointment.start }}</p>
+            <p>End: {{ appointment.end }}</p>
+        </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+
+<h2>Canceled appointment</h2>
+<div class="three_in_a_line_container">
+    {% for appointment in appointments %}
+                {% if appointment.canceled is True %}
+        <div class="three_in_a_line_element">
+            <h2>{{appointment.mikvah_id}}</h2>
+            <p>Date: {{ appointment.date }}</p>
+            <p>Beginning time: {{ appointment.start }}</p>
+            <p>End: {{ appointment.end }}</p>
+        </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base_layout.html' %}
+{% load static %}
+{% block content %}
+
+        <h1> my pasts appointments </h1>
+
+            <a href="{% url 'website:my_appointments' %}"> My appointments</a>
+
+    <div class="three_in_a_line_container">
+    {% for appointment in appointments %}
+        {% if appointment.canceled is False %}
+        <div class="three_in_a_line_element">
+            <h2>{{appointment.mikvah_id}}</h2>
+            <p>Date: {{ appointment.date }}</p>
+            <p>Start: {{ appointment.start }}</p>
+            <p>End: {{ appointment.end }}</p>
+        </div>
+
+        {% endif %}
+    {% endfor %}
+            </div>
+
+{% endblock %}

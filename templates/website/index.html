@@ -1,0 +1,52 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+    <h1>home page</h1>
+
+    {% if user.is_authenticated %}
+         <button onclick= window.location.href="{% url 'website:pro_page' %}" >page pro</button>
+         <button onclick= window.location.href="{% url 'website:client_page' %}" >page client</button>
+    {% endif %}
+
+    <h2>look for a mikvah</h2>
+
+      <form method="get" action="{% url 'website:search_result' %}">
+        {% csrf_token %}
+        {{ search_form_cf.as_p }}
+        <button type="submit">Submit</button>
+      </form>
+     <br>
+    <form method="get" action="{% url 'website:search_result' %}" id="gps_form">
+            {{ search_form_gps.as_p }}
+            <button type="button" id="location">search by gps location</button>
+        </form>
+
+
+<!-- CODE JS POUR RECUPERER LA LOCALISATION ET LA STOCKER DS LES DONNES LONGITUDE/LATITUDE -->
+<script>
+    let longitude = document.querySelector("#id_search_longitude");
+    let latitude = document.querySelector("#id_search_latitude");
+    document.querySelector("#location").addEventListener("click", () => {
+        findMyCoordinates();
+    });
+    function findMyCoordinates() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    latitude.value = position.coords.latitude
+                    longitude.value = position.coords.longitude
+                    document.querySelector("#gps_form").submit();
+
+
+                },
+                (err) => {
+                    alert(err.message);
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by your browser");
+        }
+    }
+</script>
+
+{% endblock %}

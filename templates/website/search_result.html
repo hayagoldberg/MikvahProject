@@ -1,0 +1,20 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+    <h1> search results</h1>
+
+    {% for mikvah in mikvahs %}
+        <h3>{{ mikvah.name }}</h3>
+        <p>Phone Number: {{ mikvah.phone_nb1 }}</p>
+        <p>Address: {{ mikvah.address_nb }} {{ mikvah.address_st }}, {{ mikvah.address_city }},
+            {{ mikvah.address_state }},  </p>
+        <p> Distance: {{ mikvah.distance }} </p>
+        {% if distance %}
+            <p>Distance : {{ mikvah.distance }} km</p>
+        {% endif %}
+        {% if mikvah.latitude and mikvah.longitude %}
+            <p><a href="{{ mikvah.get_gps_link }}" target="_blank">Get Directions</a></p>
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base_layout.html' %}
+{% load static %}
+
+{% block content %}
+
+    <h1>my mikvahs</h1>
+
+    <div class="three_in_a_line_container">
+
+        {% for mikvah in mikvahs %}
+        <div class="three_in_a_line_element">
+            <h3>{{ mikvah.name }}</h3>
+            <p>Mikvah ID: {{ mikvah.mikvah_id }}</p>
+            <p>Phone Number: {{ mikvah.phone_nb1 }}</p>
+            <p>Phone Number 2: {{ mikvah.phone_nb2 }}</p>
+            <p>Address: {{ mikvah.address_nb }} {{ mikvah.address_st }}, {{ mikvah.address_city }}, {{ mikvah.address_state }}</p>
+            <p>Minhag: {{ mikvah.ashkenaz }}</p>
+            <p>Minhag: {{ mikvah.sefarad }}</p>
+            <p>Minhag: {{ mikvah.chabad }}</p>
+            <h3>Position GPS: </h3>
+                <p>Longitude: {{ mikvah.longitude }}</p>
+                <p>Latitude: {{ mikvah.latitude }}</p>
+            </p>
+            <h3> Opening time: </h3>
+                    {% for mikvah_calendar in mikvah.mikvahcalendar_set.all %}
+                            <p>{{mikvah_calendar.day}}:
+                            from {{ mikvah_calendar.opening_time }} to {{ mikvah_calendar.closing_time }}</p>
+                    {% endfor %}
+
+        <a href="{% url 'website:mikvah_calendar' mikvah_id=mikvah.mikvah_id %}"> Manage my calendar </a>
+        <a href="{% url 'website:mikvah_appointments' mikvah_id=mikvah.mikvah_id %}"> see appointments </a>
+
+        </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

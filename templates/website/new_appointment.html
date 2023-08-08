@@ -1,0 +1,79 @@
+{% extends 'base_layout.html' %}
+{% load static %}
+{% block content %}
+
+    <h1>take an appointment2 </h1>
+
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.media }}
+      {{ form.as_p }}
+      <button type="submit">Soumettre</button>
+    </form>
+
+    <script src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+    <script src="{% static 'admin/js/jquery.init.js' %}"></script>
+    <script src="{% static 'admin/js/core.js' %}"></script>
+    <script src="{% static 'admin/js/admin/DateTimeShortcuts.js' %}"></script>
+    <script>
+        var dateInput = document.querySelector('input[name="date"]');
+        var today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+    </script>
+
+    {% if form.date.value %}
+        <form method="POST" action="{% url 'website:save_appointment' mikvah_id=mikvah_id %}">
+          {% csrf_token %}
+          <input type="hidden" name="selected_date" value="{{ form.date.value }}">
+          <ul>
+            {% for slot in slots %}
+              <li>
+                <input type="checkbox" class="checkbox" name="slot" value="{{ slot.pk }}">
+                {{ slot.start_time}} - {{ slot.end_time}}
+              </li>
+            {% endfor %}
+          </ul>
+          <button type="submit">Enregistrer</button>
+        </form>
+    {% endif %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"> </script>
+    <script>
+        $(function(){
+        $('.checkbox').on('change', function(){
+            var result = $('.checkbox:checked');
+            if (result.length<2 && $(this).is(":checked")){
+                var p = $(this).parent().prevAll().has(":checkbox").find(":checkbox");
+                var n = $(this).parent().nextAll().has(":checkbox").find(":checkbox");
+                var n1 = $(this).parent().nextAll().has(":checkbox").eq(0).find(":checkbox");
+                var n2 = $(this).parent().nextAll().has(":checkbox").eq(1).find(":checkbox");
+                n.prop("disabled", true);
+                p.prop("disabled", true);
+                n1.prop("disabled", false);
+                n2.prop("disabled", false);
+            }
+            if (result.length == 0){
+                var n = $(this).parent().nextAll().has(":checkbox").find(":checkbox");
+                var p = $(this).parent().prevAll().has(":checkbox").find(":checkbox");
+                n.prop("disabled", false);
+                p.prop("disabled", false);
+            }
+
+           if (result.length==2 && $(this).is(":checked")){
+            cn = $(this).parent().nextAll().has(":checkbox").eq(0).find(":checkbox")
+            cp = $(this).parent().prevAll().has(":checkbox").eq(0).find(":checkbox")
+
+            if (!cn.is(":checked") && !cn.is(":disabled") && !cp.is(":checked")){
+                cn.prop('checked', true);
+            }
+
+
+            if (!cp.is(":checked") && !cp.is(":disabled") && !cn.is(":checked")){
+                cp.prop('checked', true);
+            }
+            }
+        });
+    });
+    </script>
+
+{% endblock %}

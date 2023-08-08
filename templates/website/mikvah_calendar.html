@@ -1,0 +1,19 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+
+    <h1>My Mikvah calendar</h1>
+
+    <form method="post">
+      {% csrf_token %}
+      {% for day in days_of_week %}
+        <h3>{{day.0}}</h3>
+        <input type="text" name="day_{{forloop.counter}}" value="{{day.0}}" readonly>
+        <label>Opening time:</label> <input type="text" name="opening_time_{{forloop.counter}}" >
+        <label>Closing time:</label> <input type="text" name="closing_time_{{forloop.counter}}" >
+      {% endfor %}
+         <input type="submit" value="Submit">
+    </form>
+
+
+{% endblock %}

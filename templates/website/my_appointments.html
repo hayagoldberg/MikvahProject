@@ -1,0 +1,28 @@
+{% extends 'base_layout.html' %}
+{% load static %}
+{% block content %}
+
+        <h1> my appointments </h1>
+
+            <a href="{% url 'website:my_past_appointments' %}"> Past appointments</a>
+
+    <div class="three_in_a_line_container">
+    {% for appointment in appointments %}
+        {% if appointment.canceled is False %}
+        <div class="three_in_a_line_element">
+            <h2>{{appointment.mikvah_id.name}}</h2>
+            <p>Date: {{ appointment.date }}</p>
+            <p>Start: {{ appointment.start }}</p>
+            <p>End: {{ appointment.end }}</p>
+            <form action="{% url 'website:cancel_appointment' %}" method="post">
+                 {% csrf_token %}
+                 <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                 <button type="submit">Cancel</button>
+             </form>
+        </div>
+
+        {% endif %}
+    {% endfor %}
+            </div>
+
+{% endblock %}
