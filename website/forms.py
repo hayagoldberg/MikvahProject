@@ -4,16 +4,19 @@ from .models import Mikvah, MikvahCalendar
 
 
 class MikvahSearchFormCF(forms.Form):
+    # search a mikvah by name or city
     search_name = forms.CharField(label='Search by name', max_length=100, required=False)
     search_city = forms.CharField(label='Search by city', max_length=100, required=False)
 
 
 class MikvahSearchFormGPS(forms.Form):
+    # search the nearest mikvah from your location
     search_longitude = forms.DecimalField(widget=forms.HiddenInput(), required=False)
     search_latitude = forms.DecimalField(widget=forms.HiddenInput(), required=False)
 
 
 class MikvahForm(ModelForm):
+    # form to add a new mikvah (for pro only)
     class Meta:
         model = Mikvah
         fields = ('name', 'phone_nb1', 'phone_nb2', 'open_at', 'ashkenaz', 'sefarad', 'chabad',
@@ -38,6 +41,7 @@ class MikvahForm(ModelForm):
 
 
 class CalendarForm(ModelForm):
+    # To add opening and closing time information for a mikvah
     class Meta:
         model = MikvahCalendar
         fields = ('mikvah_id', 'day', 'opening_time', 'closing_time')
@@ -45,4 +49,5 @@ class CalendarForm(ModelForm):
 
 
 class AppointmentForm(forms.Form):
+    # to choose the date of a new appointment
     date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))

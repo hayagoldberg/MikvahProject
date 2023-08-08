@@ -26,10 +26,11 @@ class Mikvah(models.Model):
     distance = models.FloatField(null=True, blank=True)
 
     def get_gps_link(self):
+        # to be able to display a Google map link for each mikvah
         gps_link = f"https://www.google.com/maps?q={self.latitude},{self.longitude}"
         return gps_link
 
-
+# choice fields for MikvahCalendar
 CHOICES_DAY = (
     ('Monday', 'Monday'),
     ('Tuesday', 'Tuesday'),
@@ -40,14 +41,15 @@ CHOICES_DAY = (
     ('Sunday', 'Sunday'),
         )
 
-
 class MikvahCalendar(models.Model):
+    # opening time of the mikvah
     mikvah_id = models.ForeignKey(Mikvah, on_delete=models.CASCADE)
     day = models.CharField(max_length=10, choices=CHOICES_DAY)
     opening_time = models.TimeField(blank=True)
     closing_time = models.TimeField(blank=True)
 
     def calculate_opening_time_duration(self):
+        # function to calculate the time that the mikvah will be open in minutes
         start_time = self.opening_time
         end_time = self.closing_time
         duration_minutes = (end_time.hour * 60 + end_time.minute) - (start_time.hour * 60 + start_time.minute)
@@ -58,6 +60,7 @@ class MikvahCalendar(models.Model):
 
 
 class Slots(models.Model):
+    # model to save the slots for creating new appointments
     mikvah_calendar = models.ForeignKey(MikvahCalendar, on_delete=models.CASCADE)
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -67,6 +70,7 @@ class Slots(models.Model):
 
 
 class Appointment(models.Model):
+    # to save the appointments and connect them to yhe user and the mikvah
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
     mikvah_id = models.ForeignKey(Mikvah, on_delete=models.CASCADE, blank=True)
     mikvah_calendar = models.ForeignKey(MikvahCalendar, on_delete=models.CASCADE)

@@ -9,6 +9,7 @@ from django.urls import reverse
 # Create your views here.
 
 def signup_view(request):
+    # Signup view to register new users and sort them on 2 groups: client and professional
     if request.method == "POST":
         form = SignupForm(request.POST)
         if form.is_valid():
@@ -16,21 +17,19 @@ def signup_view(request):
             user.save()
             group_professional = Group.objects.get(name='Professional')
             group_client = Group.objects.get(name='Client')
-            if group_professional in user.groups.all():
+            if group_professional in user.groups.all(): # if the user choose a pro account
                 login(request, user)
-                return redirect('website:pro_page')
-            elif group_client in user.groups.all():
+                return redirect('website:pro_page') # redirect to the pro page
+            elif group_client in user.groups.all(): # if the uer choose a client account
                 login(request, user)
-                return redirect('website:client_page')
-            # else:
-                # Handle users not in either group
-                # return redirect('Website:other_page')
+                return redirect('website:client_page') # redirect to the client page
     else:
         form = SignupForm()
     return render(request, 'accounts/signup.html', {"form": form})
 
 
 def login_view(request):
+    # login the user and redirect him to the right page (client or pro)
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
@@ -47,6 +46,7 @@ def login_view(request):
 
 
 def logout_view(request):
+    # logout the user and redirect to the homepage
     if request.method == "POST":
         logout(request)
         return render(request, 'website/index.html')
