@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
 from urllib.parse import urlencode
 from website.forms import MikvahSearchFormGPS, MikvahSearchFormCF
@@ -86,3 +86,7 @@ def search_result_view(request):
     context = {'mikvahs': search_results}
     # Render the 'search_result.html' template with the context
     return render(request, 'website/search_result.html', context)
+
+
+def test_view(request):
+    return HttpResponse("just a test view to see of changes are saved correctly on git")
