@@ -2,13 +2,9 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.decorators import user_passes_test
 from website.forms import AppointmentForm
 from website.models import Mikvah, MikvahCalendar, Slots, Appointment
-from datetime import datetime, timedelta, time
+from website.utils import user_group_is_client, get_next_time, get_time_format
+from datetime import datetime
 from django.utils import timezone
-
-
-def user_group_is_client(user):
-    #Function that checks if the user is in the 'Client' group
-    return user.groups.filter(name='Client').exists()
 
 
 @user_passes_test(user_group_is_client)
@@ -37,36 +33,35 @@ def new_appointment_view(request, mikvah_id):
 
             # Creating time slots by using the 'get_next_time' function.
             # Repeat the process until closing time of the mikvah
-            next_opening_time = mikvah_calendar.opening_time
-            while next_opening_time < mikvah_calendar.closing_time:
-                start_slot = next_opening_time
-                end_slot = get_next_time(start_slot, 15)
-                next_opening_time = end_slot
-                try:
-                    slot = Slots(mikvah_calendar=mikvah_calendar, start_time=start_slot, end_time=end_slot)
-                    slot.save()
-                except:
-                    pass
+            if mikvah_calendar:
+                next_opening_time = mikvah_calendar.opening_time
+                while next_opening_time < mikvah_calendar.closing_time:
+                    start_slot = next_opening_time
+                    end_slot = get_next_time(start_slot, 15)
+                    next_opening_time = end_slot
+                    try:
+                        slot = Slots(mikvah_calendar=mikvah_calendar, start_time=start_slot, end_time=end_slot)
+                        slot.save()
+                    except:
+                        pass
 
-            # get the saved appointments for this date
-            mikvah_appointments = Appointment.objects.filter(mikvah_id=mikvah_id, date=date)
-            print('appointments', mikvah_appointments)
-            slots = Slots.objects.filter(mikvah_calendar=mikvah_calendar)
+                # get the saved appointments for this date
+                mikvah_appointments = Appointment.objects.filter(mikvah_id=mikvah_id, date=date)
+                print('appointments', mikvah_appointments)
+                slots = Slots.objects.filter(mikvah_calendar=mikvah_calendar)
 
-            # Excluding the slots that already have saved appointment to prevent double appointment for the same time
-            for appointment in mikvah_appointments:
-                slots = slots.exclude(start_time__gte=appointment.start, end_time__lte=appointment.end)
+                # Excluding the slots that already have saved appointment to prevent double appointment for the same time
+                for appointment in mikvah_appointments:
+                    slots = slots.exclude(start_time__gte=appointment.start, end_time__lte=appointment.end)
+
+            else:
+                return HttpResponse('This Mikvah has no Calendar updated')
+
+        else:
+            return HttpResponse('form is not valid')
 
     context = {'form': form, 'slots': slots, 'mikvah_id': mikvah_id.mikvah_id}
     return render(request, 'website/new_appointment.html', context)
-
-
-def get_next_time(current_time, time_slot):
-    # calculating the slots by adding 15 min to the opening time of the mikvah and then 15 min to the ending time of the last slot.
-    opening_time = time(current_time.hour, current_time.minute, current_time.second)
-    opening_datetime = datetime.combine(datetime.today(), opening_time)
-    next_opening_time = (opening_datetime + timedelta(minutes=time_slot)).time()
-    return next_opening_time
 
 
 def save_appointment_view(request, mikvah_id):
@@ -76,7 +71,7 @@ def save_appointment_view(request, mikvah_id):
     if request.method == 'POST':
         # Get the selectioned slots and restricting them to choice of a maximum of 3
         selected_slots = request.POST.getlist('slot')
-        if len(selected_slots) >= 1 and len(selected_slots) <= 3:
+        if 1 <= len(selected_slots) <= 3:
             slots = Slots.objects.filter(pk__in=selected_slots)
 
             # Calculate start and end time of the appointment
@@ -100,20 +95,6 @@ def save_appointment_view(request, mikvah_id):
     else:
         context = {'mikvah_id': mikvah_id}
         return redirect('website:save_appointment', context)
-
-
-def get_time_format(time_str):
-    # Function to translate objects to time format
-    if time_str.lower() == 'noon':
-        time_apm = time(hour=12, minute=0).strftime("%I:%M %p")
-        time_obj = datetime.strptime(time_apm, "%I:%M %p").time()
-    elif len(time_str) == 6:
-        time_apm = time(hour=int(time_str[0]), minute=0).strftime("%I:%M %p")
-        time_obj = datetime.strptime(time_apm, "%I:%M %p").time()
-    else:
-        time_str_re = time_str.replace(".", "")
-        time_obj = datetime.strptime(time_str_re, "%I:%M %p").time()
-    return time_obj
 
 
 def my_appointments_view(request):

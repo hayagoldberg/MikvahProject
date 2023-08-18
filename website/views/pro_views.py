@@ -1,12 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.decorators import user_passes_test
 from website.forms import MikvahForm
 from website.models import Mikvah, MikvahCalendar, CHOICES_DAY, Appointment
-
-
-def user_group_is_professional(user):
-    # Function to checks if the user is in the 'Client' group
-    return user.groups.filter(name='Professional').exists()
+from website.utils import user_group_is_professional
 
 
 def my_mikvah(request):
@@ -35,6 +31,8 @@ def add_mikvah(request):
             mikvah.user = request.user
             mikvah.save()
             return redirect('website:my_mikvah')
+        else:
+            return HttpResponse('form is not valid')
     else:
         form = MikvahForm()
     context = {

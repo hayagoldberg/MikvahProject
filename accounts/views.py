@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User, Group
@@ -23,6 +23,10 @@ def signup_view(request):
             elif group_client in user.groups.all(): # if the uer choose a client account
                 login(request, user)
                 return redirect('website:client_page') # redirect to the client page
+            else:
+                return redirect('website:index')
+        else:
+            return HttpResponse('Signup action failed')
     else:
         form = SignupForm()
     return render(request, 'accounts/signup.html', {"form": form})

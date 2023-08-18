@@ -53,6 +53,7 @@ def index_view(request):
     # Render the 'index.html' template with the context
     return render(request, 'website/index.html', context)
 
+
 def search_result_view(request):
     # Get the search parameters from the request's GET data
     search_name = request.GET.get('search_name')
@@ -64,9 +65,6 @@ def search_result_view(request):
     if search_name or search_city:
         # Perform a filter on Mikvah model based on the provided parameters
         search_results = Mikvah.objects.filter(name__icontains=search_name, address_city__icontains=search_city)
-    else:
-        # If no name or city provided, set search_results to a placeholder value ('jjj')
-        search_results = 'jjj'
 
     # If longitude and latitude search parameters are provided
     if search_longitude is not None and search_latitude is not None:
